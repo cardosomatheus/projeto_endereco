@@ -1,0 +1,5 @@
+-- sequencia da pk de municipio
+CREATE SEQUENCE SEQ_PID_MUNICIPIO
+START WITH 1 
+INCREMENT BY 1;
+
