@@ -4,6 +4,12 @@ from geopy.geocoders import Nominatim
 import pycep_correios
 
 
+
+class Endereco:
+    def __init__(self):
+        url = f"https://viacep.com.br/ws/{validacao_ceps_csv()}/json"
+
+
 def validacao_ceps_csv():
     """Retorna o cep selecionado randomicamente do arquivo csv 
     -- ele confirma se o cep tem 9 caracteres e retira as quebras de linhas"""
