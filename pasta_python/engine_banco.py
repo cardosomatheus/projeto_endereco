@@ -1,4 +1,4 @@
-from  sqlalchemy import create_engine, engine
+from  sqlalchemy import create_engine, engine, text
 import oracledb
 
 
@@ -9,8 +9,14 @@ connect = engine.url.URL.create(
     host='localhost',
     port=1521,
     database='',
-    query=dict(service_name='XPDB1')
+    query=dict(service_name='XEPDB1')
 )
 
-engine = create_engine(engine)
+engine = create_engine(connect, echo=True)
 
+
+
+#with engine.connect() as conn:
+#    sql = 'select sysdate from dual'
+#    for linha in conn.execute(text(sql)):
+#        print(linha)
