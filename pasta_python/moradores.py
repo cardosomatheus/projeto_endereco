@@ -8,6 +8,7 @@ class Moradores:
     def __init__(self):
         self.__menor_data = date.today().replace(year = date.today().year - 80)
         self.__maior_data = date.today().replace(year = date.today().year - 18)
+        self.__arquivo_csv = 'pasta_python/grupos.csv'
 
     
     def inserindo_moradores(self, dataframe):
@@ -26,7 +27,7 @@ class Moradores:
 
 
     def lendo_arquivo(self):
-        dados = pd.read_csv('pasta_python/grupos.csv')
+        dados = pd.read_csv(self.__arquivo_csv)
         return self.seleciona_campos(dataframe = dados)
     
     
