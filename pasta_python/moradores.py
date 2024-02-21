@@ -1,11 +1,7 @@
 import pandas as pd
 from random import randint
 from datetime import date, datetime, timedelta, time
-from sqlalchemy import Table, Column, MetaData, String, Integer, Date, insert, Sequence
-from engine_banco import engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from engine_banco import engine
+from engine_banco import conexao
 
     
 class Moradores:
@@ -15,26 +11,24 @@ class Moradores:
 
     
     def inserindo_moradores(self, dataframe):
-        tb_morador = Table('tb_moradores',
-                MetaData(),
-#                Column("p_morador", Integer,Sequence('SQ_MORADORES'), primary_key=True),
-                Column("nome", String(100)),
-                Column("genero", String(1)),
-                Column("data_nascimento", Date)
-            )
-        with engine.connect() as conn:
-            for  row in dataframe.to_dict('records'):
-                insert_stmt = insert(tb_morador).values(row)
-                conn.execute(insert_stmt, row)
-                print(insert_stmt)
-                #print(row)
+        print('Iniciando execução do processo de inserção dos dados.')
+        with conexao.cursor() as conn:
+            cuncksize = 1000
+            dados_em_1000 = [dataframe.to_dict('records')[i:i+cuncksize] for i in range(0, dataframe.shape[0], cuncksize)]
+            insercao_sql  = """ INSERT INTO TB_MORADORES (P_MORADOR, NOME, GENERO, DATA_NASCIMENTO)
+                                    VALUES (SQ_MORADORES.NEXTVAL, :NOME, :GENERO, :DATA_NASCIMENTO)"""
             
-
+            print('INSERINDO OS DADOS: QTD DE DADOS', dataframe.shape[0])
+            for dados_divididos in dados_em_1000:
+                conn.executemany(insercao_sql,dados_divididos)
+                conexao.commit()
+            print('INSERÇÃO FINALIZADA.')
 
 
     def lendo_arquivo(self):
         dados = pd.read_csv('pasta_python/grupos.csv')
         return self.seleciona_campos(dataframe = dados)
+    
     
     @property
     def data_nascimento(self):
@@ -57,15 +51,8 @@ class Moradores:
         return dataframe[['nome','genero','data_nascimento']]
 
 
-#if __name__ == '__main__': 
-moradores = Moradores()
-dataframe = moradores.lendo_arquivo()
-moradores.inserindo_moradores(dataframe=dataframe)
+if __name__ == '__main__': 
+    moradores = Moradores()
+    moradores.inserindo_moradores(dataframe=moradores.lendo_arquivo())
 
 
-from sqlalchemy import create_engine
-from sqlalchemy import inspect
-
-
-#insp = inspect(engine)
-#print(insp.get_table_names())
