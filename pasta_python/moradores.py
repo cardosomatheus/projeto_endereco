@@ -19,11 +19,9 @@ class Moradores:
             insercao_sql  = """ INSERT INTO TB_MORADORES (P_MORADOR, NOME, GENERO, DATA_NASCIMENTO)
                                     VALUES (SQ_MORADORES.NEXTVAL, :NOME, :GENERO, :DATA_NASCIMENTO)"""
             
-            print('INSERINDO OS DADOS: QTD DE DADOS', dataframe.shape[0])
             for dados_divididos in dados_em_1000:
                 conn.executemany(insercao_sql,dados_divididos)
                 conexao.commit()
-            print('INSERÇÃO FINALIZADA.')
 
 
     def lendo_arquivo(self):
@@ -50,10 +48,3 @@ class Moradores:
         dataframe['nome']            = dataframe['nome'].astype(dtype='string')
         dataframe['genero']          = dataframe['genero'].astype(dtype='string')
         return dataframe[['nome','genero','data_nascimento']]
-
-
-if __name__ == '__main__': 
-    moradores = Moradores()
-    moradores.inserindo_moradores(dataframe=moradores.lendo_arquivo())
-
-
