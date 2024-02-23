@@ -45,6 +45,3 @@ class Endereco:
                         return int(consulta_cidade[0])
                     else:
                         return None
-
-
-
