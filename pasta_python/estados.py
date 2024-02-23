@@ -13,7 +13,6 @@ class Estados:
 
     def estados_brasileiros(self):
         with conexao.cursor() as conn:
-            print('INSERINDO OS ESTADOS')
             for estado in self.__uf_json:
                 cod_ibge = estado["id"]
                 sigla_uf = estado["sigla"] 
@@ -25,9 +24,6 @@ class Estados:
 
                 conn.execute(insercao_sql, [sigla_uf,cod_ibge,nome_uf,regiao])
                 conexao.commit()
-            print('INSERÇÃO FINALIZADA.')
+
     
     
-if __name__ == '__main__':
-    uf = Estados()
-    uf.estados_brasileiros()    
