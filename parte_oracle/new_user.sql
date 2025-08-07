@@ -1,7 +1,0 @@
-﻿-- alteracao da sessão para a criacao do usuario
-ALTER SESSION SET CONTAINER = XEPDB1;
-
-CREATE USER USERHR IDENTIFIED BY  MCDS123;
-
--- permissões
-GRANT CREATE SESSION, CREATE TABLE TO USERHR;
