@@ -5,7 +5,9 @@ load_dotenv()
 
 
 def conexao_bd():
-    """ Retorna a conexao com o BD oracle """
+    """ Retorna a conexao com o BD oracle Atraves da variaveis 
+        de ambientes configuradas 
+    """
     #print(os.getenv("PWD_DATABASE"))
     #print(os.getenv("HOST_DATABASE"))
     #print(os.getenv("PORT_DATABASE"))
