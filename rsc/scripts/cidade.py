@@ -6,6 +6,22 @@ class Cidade:
         self.conexao = conexao_bd()
         
 
+    def get_id_cidade(self,cidade:str) -> int:
+        """ Retorna o id da cidade informada."""
+        cidade = cidade.upper()
+        
+        vsql =  """SELECT ID_CIDADE 
+                     FROM USERADDRESS.VIEW_CIDADE_UF
+                    WHERE UPPER(NOME_CIDADE) = :1
+                """ 
+        with self.conexao.cursor() as conn:
+            for value in conn.execute(statement=vsql,parameters=(cidade,)):
+                return value[0]
+        
+            return None
+
+
+
     def busca_cidades(self) -> pd.DataFrame:
         """ Busca os valores contidos no arquivo json e retorna em formato Dataframe"""
         try:
@@ -23,6 +39,7 @@ class Cidade:
         except Exception as e:
             print('Erro no processo de buscar o arquivo de cidade.!!!')    
             print(e)
+
 
 
     def carga_cidades(self) -> None:  
@@ -50,7 +67,12 @@ class Cidade:
 
             for dados_divididos in dados_em_1000:
                 conn.executemany(insercao_sql, dados_divididos, batcherrors=True)
+            self.conexao.commit()                
         print('Processo de carga de Cidades finalizado!!!')
 
                     
 
+
+
+#city = Cidade()
+#city.get_id_cidade(cidade='Belo Horizontesss')

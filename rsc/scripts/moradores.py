@@ -1,50 +1,79 @@
-import pandas as pd
-from random import randint
-from datetime import date, datetime, timedelta, time
-from rsc.scripts.database import conexao
-
+from random import randrange
+from datetime import date, timedelta
+from database import conexao_bd
+from faker import Faker
+from oracledb import IntegrityError
     
 class Moradores:
     def __init__(self):
-        self.__menor_data = date.today().replace(year = date.today().year - 80)
-        self.__maior_data = date.today().replace(year = date.today().year - 18)
-        self.__arquivo_csv = 'pasta_python/grupos.csv'
-
+        self._faker = Faker('pt_BR')
+        self.conexao = conexao_bd()
     
-    def inserindo_moradores(self, dataframe):
-        print('Iniciando execução do processo de inserção dos dados.')
-        with conexao.cursor() as conn:
-            cuncksize = 1000
-            dados_em_1000 = [dataframe.to_dict('records')[i:i+cuncksize] for i in range(0, dataframe.shape[0], cuncksize)]
-            insercao_sql  = """ INSERT INTO TB_MORADORES (P_MORADOR, NOME, GENERO, DATA_NASCIMENTO)
-                                    VALUES (SQ_MORADORES.NEXTVAL, :NOME, :GENERO, :DATA_NASCIMENTO)"""
+    def carga_moradores(self, quantidade: int=1000):       
+        vsql  = """ INSERT 
+                        INTO USERADDRESS.TB_MORADORES (NOME, DOCUMENTO, DATA_NASCIMENTO)
+                      VALUES (:NOME, :DOCUMENTO, :DATA_NASCIMENTO)
+                """            
+
+        with self.conexao.cursor() as conn:
+            for valor in self.gera_moradores().values():
+                
+                try:
+                    conn.execute(vsql,
+                                (valor.get('nome'),
+                                valor.get('cep'),
+                                valor.get('data_nascimento'),))
+                    self.conexao.commit()
+                    
+                except IntegrityError as e:
+                    """ Contraint unica de morador, tratamento de exceção para isso."""
+                    if e.args[0].code == 1:  
+                        continue                   
+                    print(e)
+                           
+                except Exception as e:
+                    print(f'Não foi possivel inserir o morador:  {valor}')
+                    continue
+            self.conexao.commit()
+                
+    
+    
+    def gera_data_nascimento(self):
+        menor_data_nascimento_permitida = date.today().replace(year = date.today().year - 80)
+        maior_data_nascimento_permitada = date.today().replace(year = date.today().year - 50)
+
+        delta = maior_data_nascimento_permitada - menor_data_nascimento_permitida
+        delta_inteiro = (delta.days * 24 * 60 *60) + delta.seconds
+        qtd_segundos_aleatorios = randrange(delta_inteiro)
+        return maior_data_nascimento_permitada + timedelta(seconds=qtd_segundos_aleatorios)
+    
+    
+
+    def gera_moradores(self, quantidade: int=1000) -> dict:
+        """ Gera nome e documento de moradores baseado no parâmetro quantidade."""
+        if not isinstance(quantidade, int):
+            raise Exception ('O valor deve ser inteiro.!!')
+        
+        if quantidade <= 1:
+            return 'O valor deve ser maior que 1.'
+        
+        contador = 0
+        dict_moradores = {}
+        while contador <= quantidade:
+            dict_morador = {}
             
-            for dados_divididos in dados_em_1000:
-                conn.executemany(insercao_sql,dados_divididos)
-                conexao.commit()
+            dict_morador['nome'] = self._faker.name()
+            dict_morador['cep']  = self._faker.cpf()
+            dict_morador['data_nascimento'] = self.gera_data_nascimento()
+            
+            contador +=1 
+            dict_moradores[contador] = dict_morador
+                        
+        return dict_moradores
+              
+        
+        
 
 
-    def lendo_arquivo(self):
-        dados = pd.read_csv(self.__arquivo_csv)
-        return self.seleciona_campos(dataframe = dados)
-    
-    
-    @property
-    def data_nascimento(self):
-        hora = time(00, 00, 0)
-        diferenca_entre_datas  = self.__maior_data - self.__menor_data
-        dias_aleatorio = randint(0, diferenca_entre_datas.days)
-        data_aleatoria = self.__menor_data + timedelta(days=dias_aleatorio)
-        data_combinada =  datetime.combine(data_aleatoria, hora)
-        return data_combinada
-    
-
-    def seleciona_campos(self, dataframe):
-        dataframe.rename(columns={"name": "nome", "classification": "genero"}, inplace=True)
-        dataframe = dataframe[['nome','genero']]
-        dataframe = dataframe.dropna(subset=['nome','genero'])
-        dataframe['data_nascimento'] = 0
-        dataframe['data_nascimento'] = pd.to_datetime(dataframe['data_nascimento'].apply(lambda x: self.data_nascimento))
-        dataframe['nome']            = dataframe['nome'].astype(dtype='string')
-        dataframe['genero']          = dataframe['genero'].astype(dtype='string')
-        return dataframe[['nome','genero','data_nascimento']]
+morador = Moradores()
+morador.carga_moradores(0)

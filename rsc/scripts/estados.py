@@ -57,7 +57,7 @@ class Estados:
                 except Exception as e:
                     print(f'Não foi possivel inserir a uf:  {uf["sigla"]}')
                     continue
-                
+            self.conexao.commit()
         print('Processo de carga de UFs finalizado!!!')
 
 
@@ -65,8 +65,8 @@ class Estados:
 
 
 
-ufs = Estados()
-ufs.carga_estados_brasileiros()
+#ufs = Estados()
+#ufs.carga_estados_brasileiros()
 
 
 
