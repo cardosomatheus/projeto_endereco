@@ -11,5 +11,8 @@ ENV ORACLE_PWD=mcds123
 ENV ENABLE_ARCHIVELOG=true
 ENV ENABLE_FORCE_LOGGING=true
 
+# Volume do banco
+VOLUME /opt/oracle/oradata
+
 # Expondo a porta padrão do Oracle
 EXPOSE 1521

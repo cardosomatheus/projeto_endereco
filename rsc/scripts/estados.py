@@ -1,6 +1,6 @@
 ﻿#   Bibliotecas
 import requests
-from database import conexao_bd
+from .database import conexao_bd 
 from oracledb import IntegrityError
 
 
@@ -51,12 +51,3 @@ class Estados:
             self.conexao.commit()
         print('Processo de carga de UFs finalizado!!!')
 
-#ufs = Estados()
-#ufs.carga_estados_brasileiros()
-
-
-
-
-
-    
-    

@@ -1,6 +1,6 @@
 import pandas as pd
-from cidade import Cidade
-from database import conexao_bd
+from .cidade import Cidade
+from .database import conexao_bd
 
 class Endereco:
     """Classe para manipulação e carga de endereços brasileiros."""
@@ -55,5 +55,3 @@ class Endereco:
 
 
 
-#end = Endereco()
-#end.carga_enderecos()

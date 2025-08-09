@@ -2,7 +2,7 @@
 # Bibliotecas
 from random import randrange
 from datetime import date, timedelta
-from database import conexao_bd
+from .database import conexao_bd
 from faker import Faker
 from oracledb import IntegrityError
     
@@ -71,7 +71,3 @@ class Moradores:
               
         
         
-
-
-morador = Moradores()
-morador.carga_moradores(0)

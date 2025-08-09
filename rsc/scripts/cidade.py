@@ -1,6 +1,6 @@
 ﻿#   Bibliotecas
 import pandas as pd 
-from database import conexao_bd
+from .database import conexao_bd
 
 class Cidade:
     """Classe para manipulação de dados de cidades brasileiras."""
@@ -64,5 +64,3 @@ class Cidade:
 
 
 
-#city = Cidade()
-#city.get_id_cidade(cidade='Belo Horizontesss')
